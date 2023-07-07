@@ -8,6 +8,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -94,7 +95,7 @@ public class FormTelegramBot extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, e);
         }
     }
-
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -171,9 +172,19 @@ public class FormTelegramBot extends javax.swing.JFrame {
 
         btnClear.setFont(new java.awt.Font("Poppins Medium", 0, 15)); // NOI18N
         btnClear.setText("Clear");
+        btnClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearActionPerformed(evt);
+            }
+        });
 
         btnHapus.setFont(new java.awt.Font("Poppins Medium", 0, 15)); // NOI18N
         btnHapus.setText("Hapus");
+        btnHapus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHapusActionPerformed(evt);
+            }
+        });
 
         btnEdit.setFont(new java.awt.Font("Poppins Medium", 0, 15)); // NOI18N
         btnEdit.setText("Edit");
@@ -185,6 +196,11 @@ public class FormTelegramBot extends javax.swing.JFrame {
 
         btnRefresh.setFont(new java.awt.Font("Poppins Medium", 0, 15)); // NOI18N
         btnRefresh.setText("Refresh");
+        btnRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRefreshActionPerformed(evt);
+            }
+        });
 
         jLabel6.setFont(new java.awt.Font("Poppins Light", 0, 12)); // NOI18N
         jLabel6.setText("*pengisian Chat ID setelah member terdaftar ");
@@ -332,10 +348,42 @@ public class FormTelegramBot extends javax.swing.JFrame {
 
     private void btnDaftarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDaftarActionPerformed
         // TODO add your handling code here:
+        String tChat = txtChat.getText();
+        String tUsername = txtUsername.getText();
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
+            String sql = "INSERT INTO member (chat_id, username) VALUES (?, ?)";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, tChat);
+            statement.setString(2, tUsername);
+            statement.executeUpdate();
+            statement.close();
+
+            // Refresh table data
+            baca_data();
+        } catch (SQLException exception) {
+            JOptionPane.showMessageDialog(null, exception);
+        }
     }//GEN-LAST:event_btnDaftarActionPerformed
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
         // TODO add your handling code here:
+        String tChat = txtChat.getText();
+        String tUsername = txtUsername.getText();
+        if(!tChat.isEmpty() && !tUsername.isEmpty()) {
+            try (Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
+                String sql = "UPDATE member SET username=? WHERE chat_id=?";
+                PreparedStatement statement = connection.prepareStatement(sql);
+                statement.setString(1, tUsername);
+                statement.setString(2, tChat);
+                statement.executeUpdate();
+                statement.close();
+
+                // Refresh table data
+                baca_data();
+            } catch (SQLException exception) {
+                JOptionPane.showMessageDialog(null, exception);
+            }
+        }
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnBroadcastActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBroadcastActionPerformed
@@ -349,6 +397,30 @@ public class FormTelegramBot extends javax.swing.JFrame {
     private void btnDatabaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDatabaseActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnDatabaseActionPerformed
+
+    private void btnHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusActionPerformed
+        // TODO add your handling code here:
+        try{
+            String sql="delete from member where chat_id='" + txtChat.getText() + "'";
+            stm.executeUpdate(sql);
+            baca_data();
+        }
+        catch(SQLException ex)
+        {
+            JOptionPane.showMessageDialog(null, ex);
+        }
+    }//GEN-LAST:event_btnHapusActionPerformed
+
+    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
+        // TODO add your handling code here:
+        txtChat.setText("");
+        txtUsername.setText("");
+    }//GEN-LAST:event_btnClearActionPerformed
+
+    private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
+        // TODO add your handling code here:
+        baca_data();
+    }//GEN-LAST:event_btnRefreshActionPerformed
 
     /**
      * @param args the command line arguments
