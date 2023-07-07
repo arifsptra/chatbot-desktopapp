@@ -9,12 +9,15 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.generics.BotOptions;
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 /**
  *
@@ -33,7 +36,7 @@ public class Chatbot extends TelegramLongPollingBot {
     
     // Flag to track registration status
     private static final String REGISTERED_FLAG = "REGISTERED";
-
+    
     @Override
     public void onUpdateReceived(Update update) {
         if(update.hasMessage()){
@@ -48,17 +51,7 @@ public class Chatbot extends TelegramLongPollingBot {
             System.out.println(username);
 
             saveUserData(sChatId, username);
-//            
-//            if(text.equals("/daftar")) {
-//                saveMemberData(sChatId, username);
-//                sendResponse(chatId, "Terima kasih telah mendaftar!");
-//            }
-//            
-//            if(text.equals("/cuaca")) {
-//                sendResponse(chatId, "Cuaca Hari ini Dingin!");
-//            }
-             // Check if the user is registered
-             
+            
             boolean isRegistered = isUserRegistered(sChatId);
             if (!isRegistered) {
                 if (text.equals("/daftar")) {
@@ -171,6 +164,33 @@ public class Chatbot extends TelegramLongPollingBot {
         try {
             execute(message);
         } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    void sendBroadcastAll(String broadcast) {
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
+            String sql = "SELECT chat_id FROM member";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String chatId = resultSet.getString("chat_id");
+                SendMessage sendMessage;
+                sendMessage = new SendMessage();
+                sendMessage.setChatId(chatId);
+                sendMessage.setText(broadcast);
+
+                try {
+                    execute(sendMessage);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }

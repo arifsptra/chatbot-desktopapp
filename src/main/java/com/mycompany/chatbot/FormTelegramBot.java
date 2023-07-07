@@ -13,11 +13,14 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.LongPollingBot;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
@@ -36,12 +39,14 @@ public class FormTelegramBot extends javax.swing.JFrame {
     Statement stm;
     private Object[][] dataTable = null;
     private String[] header = {"ChatID", "Username"};
+    private Chatbot chatbot;
 
     /**
      * Creates new form FormTelegramBot
      */
     public FormTelegramBot() throws SQLException {
         initComponents();
+        
         KoneksiMysql();
         
         baca_data();
@@ -54,6 +59,9 @@ public class FormTelegramBot extends javax.swing.JFrame {
                 setField();
             }
         });
+        
+        // Inisialisasi objek Chatbot
+        chatbot = new Chatbot();
     }
     
     public void KoneksiMysql() throws SQLException {
@@ -214,7 +222,7 @@ public class FormTelegramBot extends javax.swing.JFrame {
         jScrollPane2.setViewportView(txtBroadcast);
 
         btnBroadcast.setFont(new java.awt.Font("Poppins Medium", 0, 15)); // NOI18N
-        btnBroadcast.setText("Broadcast");
+        btnBroadcast.setText("Broadcast All");
         btnBroadcast.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnBroadcastActionPerformed(evt);
@@ -388,6 +396,9 @@ public class FormTelegramBot extends javax.swing.JFrame {
 
     private void btnBroadcastActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBroadcastActionPerformed
         // TODO add your handling code here:
+        String broadcastMessage = txtBroadcast.getText();
+        
+        chatbot.sendBroadcastAll(broadcastMessage);
     }//GEN-LAST:event_btnBroadcastActionPerformed
 
     private void btnKunciActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKunciActionPerformed
@@ -421,7 +432,7 @@ public class FormTelegramBot extends javax.swing.JFrame {
         // TODO add your handling code here:
         baca_data();
     }//GEN-LAST:event_btnRefreshActionPerformed
-
+    
     /**
      * @param args the command line arguments
      */
@@ -497,4 +508,8 @@ public class FormTelegramBot extends javax.swing.JFrame {
     private javax.swing.JTextArea txtPesanMasukKeluar;
     private javax.swing.JTextField txtUsername;
     // End of variables declaration//GEN-END:variables
+
+    private void execute(SendMessage sendMessage) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }
