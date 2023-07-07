@@ -168,6 +168,27 @@ public class Chatbot extends TelegramLongPollingBot {
         }
     }
     
+    void sendBroadcastTo(String username, String broadcast) {
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
+            String sql = "SELECT chat_id FROM member WHERE username=?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, username);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                String sChatId = resultSet.getString("chat_id");
+                long chatId = Long.parseLong(sChatId);
+                sendResponse(chatId, broadcast);
+            }
+
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    
     void sendBroadcastAll(String broadcast) {
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
             String sql = "SELECT chat_id FROM member";
@@ -175,17 +196,9 @@ public class Chatbot extends TelegramLongPollingBot {
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                String chatId = resultSet.getString("chat_id");
-                SendMessage sendMessage;
-                sendMessage = new SendMessage();
-                sendMessage.setChatId(chatId);
-                sendMessage.setText(broadcast);
-
-                try {
-                    execute(sendMessage);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
+                String sChatId = resultSet.getString("chat_id");
+                long chatId = Long.parseLong(sChatId);
+                sendResponse(chatId, broadcast);
             }
 
             resultSet.close();

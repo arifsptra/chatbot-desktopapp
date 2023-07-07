@@ -62,6 +62,8 @@ public class FormTelegramBot extends javax.swing.JFrame {
         
         // Inisialisasi objek Chatbot
         chatbot = new Chatbot();
+        
+        bacaMember();
     }
     
     public void KoneksiMysql() throws SQLException {
@@ -136,6 +138,8 @@ public class FormTelegramBot extends javax.swing.JFrame {
         txtPesanMasukKeluar = new javax.swing.JTextArea();
         btnKunci = new javax.swing.JButton();
         btnDatabase = new javax.swing.JButton();
+        btnBroadcastTo = new javax.swing.JButton();
+        cmbMember = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Telegram Bot - Arif Saputra");
@@ -255,6 +259,20 @@ public class FormTelegramBot extends javax.swing.JFrame {
             }
         });
 
+        btnBroadcastTo.setFont(new java.awt.Font("Poppins Medium", 0, 15)); // NOI18N
+        btnBroadcastTo.setText("Broadcast To");
+        btnBroadcastTo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBroadcastToActionPerformed(evt);
+            }
+        });
+
+        cmbMember.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbMemberActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -294,7 +312,10 @@ public class FormTelegramBot extends javax.swing.JFrame {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(btnRefresh))))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(btnBroadcastTo, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cmbMember, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(btnBroadcast, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(20, 20, 20))
                     .addGroup(layout.createSequentialGroup()
@@ -339,7 +360,10 @@ public class FormTelegramBot extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnBroadcast)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnBroadcast)
+                    .addComponent(btnBroadcastTo)
+                    .addComponent(cmbMember, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(50, 50, 50)
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -432,6 +456,32 @@ public class FormTelegramBot extends javax.swing.JFrame {
         // TODO add your handling code here:
         baca_data();
     }//GEN-LAST:event_btnRefreshActionPerformed
+
+    private void btnBroadcastToActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBroadcastToActionPerformed
+        // TODO add your handling code here:
+        String tMember=cmbMember.getSelectedItem().toString();
+        String broadcastMessage = txtBroadcast.getText();
+        
+        chatbot.sendBroadcastTo(tMember, broadcastMessage);
+    }//GEN-LAST:event_btnBroadcastToActionPerformed
+
+    private void cmbMemberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbMemberActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbMemberActionPerformed
+    
+    public void bacaMember() {
+        try(Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
+            stm=connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs=stm.executeQuery("select * from member");
+            rs.beforeFirst();
+            while(rs.next()) {
+                cmbMember.addItem(rs.getString(2).trim());
+            }
+                rs.close();
+        } catch(SQLException e) {
+            System.out.println("Error : "+e);
+        }
+    }
     
     /**
      * @param args the command line arguments
@@ -485,6 +535,7 @@ public class FormTelegramBot extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBroadcast;
+    private javax.swing.JButton btnBroadcastTo;
     private javax.swing.JButton btnClear;
     private javax.swing.JButton btnDaftar;
     private javax.swing.JButton btnDatabase;
@@ -492,6 +543,7 @@ public class FormTelegramBot extends javax.swing.JFrame {
     private javax.swing.JButton btnHapus;
     private javax.swing.JButton btnKunci;
     private javax.swing.JButton btnRefresh;
+    private javax.swing.JComboBox<String> cmbMember;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
