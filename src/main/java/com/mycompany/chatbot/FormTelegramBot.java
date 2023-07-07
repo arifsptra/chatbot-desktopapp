@@ -4,6 +4,18 @@
  */
 package com.mycompany.chatbot;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.LongPollingBot;
@@ -14,12 +26,73 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
  * @author arif
  */
 public class FormTelegramBot extends javax.swing.JFrame {
+    
+    // Database Credentials
+    public String DB_URL = "jdbc:mysql://localhost:3306/db_chatbot";
+    public String DB_USERNAME = "arif";
+    public String DB_PASSWORD = "Koentj1@$";
+    ResultSet rsBrg;
+    Statement stm;
+    private Object[][] dataTable = null;
+    private String[] header = {"ChatID", "Username"};
 
     /**
      * Creates new form FormTelegramBot
      */
-    public FormTelegramBot() {
+    public FormTelegramBot() throws SQLException {
         initComponents();
+        KoneksiMysql();
+        
+        baca_data();
+        
+        // mouse click tabel barang
+        tabelMember.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setField();
+            }
+        });
+    }
+    
+    public void KoneksiMysql() throws SQLException {
+        Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+    }
+    
+    // method set field form jika salah satu field tabel ditekan
+    private void setField()
+    {
+        int row=tabelMember.getSelectedRow();
+        txtChat.setText((String)tabelMember.getValueAt(row,0));
+        txtUsername.setText((String)tabelMember.getValueAt(row,1));
+    }
+
+    // method baca data dari Mysql dimasukkan ke table pada form
+    private void baca_data() {
+        try{
+            Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+            stm = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            rsBrg = stm.executeQuery("select * from member");
+            ResultSetMetaData meta = rsBrg.getMetaData();
+            int col = meta.getColumnCount();
+            int baris = 0;
+            while(rsBrg.next()) {
+                baris = rsBrg.getRow();
+            }
+            dataTable = new Object[baris][col];
+            int x = 0;
+            rsBrg.beforeFirst();
+            while(rsBrg.next()) {
+                dataTable[x][0] = rsBrg.getString("chat_id");
+                dataTable[x][1] = rsBrg.getString("username");
+                x++;
+            }
+            tabelMember.setModel(new DefaultTableModel(dataTable,header));
+        }
+        catch(SQLException e)
+        {
+            JOptionPane.showMessageDialog(null, e);
+        }
     }
 
     /**
@@ -318,7 +391,11 @@ public class FormTelegramBot extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new FormTelegramBot().setVisible(true);
+                try {
+                    new FormTelegramBot().setVisible(true);
+                } catch (SQLException ex) {
+                    Logger.getLogger(FormTelegramBot.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
