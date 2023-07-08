@@ -13,8 +13,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -47,9 +45,12 @@ public class FormTelegramBot extends javax.swing.JFrame {
     public FormTelegramBot() throws SQLException {
         initComponents();
         
-        KoneksiMysql();
+        // Inisialisasi objek Chatbot
+        chatbot = new Chatbot();
         
-        baca_data();
+        bacaData();
+        
+        bacaMember();
         
         // mouse click tabel barang
         tabelMember.addMouseListener(new MouseAdapter() {
@@ -59,53 +60,7 @@ public class FormTelegramBot extends javax.swing.JFrame {
                 setField();
             }
         });
-        
-        // Inisialisasi objek Chatbot
-        chatbot = new Chatbot();
-        
-        bacaMember();
     }
-    
-    public void KoneksiMysql() throws SQLException {
-        Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
-    }
-    
-    // method set field form jika salah satu field tabel ditekan
-    private void setField()
-    {
-        int row=tabelMember.getSelectedRow();
-        txtChat.setText((String)tabelMember.getValueAt(row,0));
-        txtUsername.setText((String)tabelMember.getValueAt(row,1));
-    }
-
-    // method baca data dari Mysql dimasukkan ke table pada form
-    private void baca_data() {
-        try{
-            Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
-            stm = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            rsBrg = stm.executeQuery("select * from member");
-            ResultSetMetaData meta = rsBrg.getMetaData();
-            int col = meta.getColumnCount();
-            int baris = 0;
-            while(rsBrg.next()) {
-                baris = rsBrg.getRow();
-            }
-            dataTable = new Object[baris][col];
-            int x = 0;
-            rsBrg.beforeFirst();
-            while(rsBrg.next()) {
-                dataTable[x][0] = rsBrg.getString("chat_id");
-                dataTable[x][1] = rsBrg.getString("username");
-                x++;
-            }
-            tabelMember.setModel(new DefaultTableModel(dataTable,header));
-        }
-        catch(SQLException e)
-        {
-            JOptionPane.showMessageDialog(null, e);
-        }
-    }
-    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -128,7 +83,6 @@ public class FormTelegramBot extends javax.swing.JFrame {
         btnHapus = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
         btnRefresh = new javax.swing.JButton();
-        jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         txtBroadcast = new javax.swing.JTextArea();
@@ -213,9 +167,6 @@ public class FormTelegramBot extends javax.swing.JFrame {
                 btnRefreshActionPerformed(evt);
             }
         });
-
-        jLabel6.setFont(new java.awt.Font("Poppins Light", 0, 12)); // NOI18N
-        jLabel6.setText("*pengisian Chat ID setelah member terdaftar ");
 
         jLabel7.setFont(new java.awt.Font("Poppins Medium", 0, 18)); // NOI18N
         jLabel7.setText("Broadcast Pesan");
@@ -304,13 +255,10 @@ public class FormTelegramBot extends javax.swing.JFrame {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 101, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 396, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel2)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addComponent(jLabel6)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(btnRefresh))))
+                                    .addComponent(btnRefresh, javax.swing.GroupLayout.Alignment.TRAILING)))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(btnBroadcastTo, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -353,8 +301,7 @@ public class FormTelegramBot extends javax.swing.JFrame {
                     .addComponent(btnClear)
                     .addComponent(btnHapus)
                     .addComponent(btnEdit)
-                    .addComponent(btnRefresh)
-                    .addComponent(jLabel6))
+                    .addComponent(btnRefresh))
                 .addGap(50, 50, 50)
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -382,18 +329,24 @@ public class FormTelegramBot extends javax.swing.JFrame {
         // TODO add your handling code here:
         String tChat = txtChat.getText();
         String tUsername = txtUsername.getText();
-        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
-            String sql = "INSERT INTO member (chat_id, username) VALUES (?, ?)";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, tChat);
-            statement.setString(2, tUsername);
-            statement.executeUpdate();
-            statement.close();
+        if(!tChat.isEmpty() && !tUsername.isEmpty()) {
+            try (Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
+                String sql = "INSERT INTO member (chat_id, username) VALUES (?, ?)";
+                PreparedStatement statement = connection.prepareStatement(sql);
+                statement.setString(1, tChat);
+                statement.setString(2, tUsername);
+                statement.executeUpdate();
+                statement.close();
 
-            // Refresh table data
-            baca_data();
-        } catch (SQLException exception) {
-            JOptionPane.showMessageDialog(null, exception);
+                // Refresh tabel data
+                bacaData();
+                
+                // Refresh combobox data list
+                cmbMember.removeAllItems();
+                bacaMember();
+            } catch (SQLException exception) {
+                JOptionPane.showMessageDialog(null, exception);
+            }
         }
     }//GEN-LAST:event_btnDaftarActionPerformed
 
@@ -410,8 +363,12 @@ public class FormTelegramBot extends javax.swing.JFrame {
                 statement.executeUpdate();
                 statement.close();
 
-                // Refresh table data
-                baca_data();
+                // Refresh tabel data
+                bacaData();
+                
+                // Refresh combobox data list
+                cmbMember.removeAllItems();
+                bacaMember();
             } catch (SQLException exception) {
                 JOptionPane.showMessageDialog(null, exception);
             }
@@ -435,10 +392,17 @@ public class FormTelegramBot extends javax.swing.JFrame {
 
     private void btnHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusActionPerformed
         // TODO add your handling code here:
-        try{
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
             String sql="delete from member where chat_id='" + txtChat.getText() + "'";
-            stm.executeUpdate(sql);
-            baca_data();
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.executeUpdate(sql);
+            
+            // Refresh tabel data
+            bacaData();
+            
+            // Refresh combobox data list
+            cmbMember.removeAllItems();
+            bacaMember();
         }
         catch(SQLException ex)
         {
@@ -454,7 +418,9 @@ public class FormTelegramBot extends javax.swing.JFrame {
 
     private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
         // TODO add your handling code here:
-        baca_data();
+        bacaData();
+        cmbMember.removeAllItems();
+        bacaMember();
     }//GEN-LAST:event_btnRefreshActionPerformed
 
     private void btnBroadcastToActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBroadcastToActionPerformed
@@ -466,11 +432,46 @@ public class FormTelegramBot extends javax.swing.JFrame {
     }//GEN-LAST:event_btnBroadcastToActionPerformed
 
     private void cmbMemberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbMemberActionPerformed
-        // TODO add your handling code here:
+        // TODO add your handling code here:1441574211
     }//GEN-LAST:event_cmbMemberActionPerformed
     
-    public void bacaMember() {
-        try(Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
+        // method set field form jika salah satu field tabel ditekan
+    private void setField()
+    {
+        int row=tabelMember.getSelectedRow();
+        txtChat.setText((String)tabelMember.getValueAt(row,0));
+        txtUsername.setText((String)tabelMember.getValueAt(row,1));
+    }
+
+    // method baca data dari Mysql dimasukkan ke table pada form
+    private void bacaData() {
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
+            stm = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            rsBrg = stm.executeQuery("select * from member");
+            ResultSetMetaData meta = rsBrg.getMetaData();
+            int col = meta.getColumnCount();
+            int baris = 0;
+            while(rsBrg.next()) {
+                baris = rsBrg.getRow();
+            }
+            dataTable = new Object[baris][col];
+            int x = 0;
+            rsBrg.beforeFirst();
+            while(rsBrg.next()) {
+                dataTable[x][0] = rsBrg.getString("chat_id");
+                dataTable[x][1] = rsBrg.getString("username");
+                x++;
+            }
+            tabelMember.setModel(new DefaultTableModel(dataTable,header));
+        }
+        catch(SQLException e)
+        {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+    
+    private void bacaMember() {
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
             stm=connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             ResultSet rs=stm.executeQuery("select * from member");
             rs.beforeFirst();
@@ -548,7 +549,6 @@ public class FormTelegramBot extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
