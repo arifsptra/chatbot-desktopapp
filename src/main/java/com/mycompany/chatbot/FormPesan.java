@@ -4,17 +4,36 @@
  */
 package com.mycompany.chatbot;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author arif
  */
 public class FormPesan extends javax.swing.JFrame {
+    
+    // Database Credentials
+    public String DB_URL = "jdbc:mysql://localhost:3306/db_chatbot";
+    public String DB_USERNAME = "arif";
+    public String DB_PASSWORD = "Koentj1@$";
+    ResultSet rsBrg;
+    Statement stm;
+    private Object[][] dataTable = null;
+    private String[] header = {"ChatID", "Username", "Pesan"};
 
     /**
      * Creates new form FormPesan
      */
     public FormPesan() {
         initComponents();
+        bacaData();
     }
 
     /**
@@ -26,22 +45,117 @@ public class FormPesan extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tabelPesan = new javax.swing.JTable();
+        jLabel2 = new javax.swing.JLabel();
+        btnKeluar = new javax.swing.JButton();
+        btnRefresh = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        tabelPesan.setFont(new java.awt.Font("Poppins Medium", 0, 15)); // NOI18N
+        tabelPesan.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Chat ID", "Username", "Pesan"
+            }
+        ));
+        jScrollPane1.setViewportView(tabelPesan);
+
+        jLabel2.setFont(new java.awt.Font("Poppins Medium", 0, 18)); // NOI18N
+        jLabel2.setText("Data Pesan");
+
+        btnKeluar.setFont(new java.awt.Font("Poppins Medium", 0, 15)); // NOI18N
+        btnKeluar.setText("Keluar");
+        btnKeluar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnKeluarActionPerformed(evt);
+            }
+        });
+
+        btnRefresh.setFont(new java.awt.Font("Poppins Medium", 0, 15)); // NOI18N
+        btnRefresh.setText("Refresh");
+        btnRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRefreshActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 396, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(btnRefresh)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnKeluar)))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnKeluar)
+                    .addComponent(btnRefresh))
+                .addGap(20, 20, 20))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnKeluarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKeluarActionPerformed
+        // TODO add your handling code here:
+        dispose();
+    }//GEN-LAST:event_btnKeluarActionPerformed
+
+    private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
+        // TODO add your handling code here:
+        bacaData();
+    }//GEN-LAST:event_btnRefreshActionPerformed
+
+    // method baca data dari Mysql dimasukkan ke table pada form
+    private void bacaData() {
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
+            stm = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            rsBrg = stm.executeQuery("select * from pesan");
+            ResultSetMetaData meta = rsBrg.getMetaData();
+            int col = meta.getColumnCount();
+            int baris = 0;
+            while(rsBrg.next()) {
+                baris = rsBrg.getRow();
+            }
+            dataTable = new Object[baris][col];
+            int x = 0;
+            rsBrg.beforeFirst();
+            while(rsBrg.next()) {
+                dataTable[x][0] = rsBrg.getString("chat_id");
+                dataTable[x][1] = rsBrg.getString("username");
+                dataTable[x][2] = rsBrg.getString("pesan");
+                x++;
+            }
+            tabelPesan.setModel(new DefaultTableModel(dataTable,header));
+        }
+        catch(SQLException e)
+        {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -78,5 +192,10 @@ public class FormPesan extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnKeluar;
+    private javax.swing.JButton btnRefresh;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable tabelPesan;
     // End of variables declaration//GEN-END:variables
 }
