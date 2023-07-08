@@ -16,6 +16,7 @@ import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -27,7 +28,7 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
  *
  * @author arif
  */
-public class FormTelegramBot extends javax.swing.JFrame {
+public class FormTelegramBot extends javax.swing.JFrame implements MessageListener  {
     
     // Database Credentials
     public String DB_URL = "jdbc:mysql://localhost:3306/db_chatbot";
@@ -41,12 +42,14 @@ public class FormTelegramBot extends javax.swing.JFrame {
 
     /**
      * Creates new form FormTelegramBot
+     * @throws java.sql.SQLException
      */
-    public FormTelegramBot() throws SQLException {
+    public FormTelegramBot() throws SQLException  {
         initComponents();
         
         // Inisialisasi objek Chatbot
         chatbot = new Chatbot();
+        chatbot.setMessageListener(this);
         
         bacaData();
         
@@ -94,6 +97,7 @@ public class FormTelegramBot extends javax.swing.JFrame {
         btnDatabase = new javax.swing.JButton();
         btnBroadcastTo = new javax.swing.JButton();
         cmbMember = new javax.swing.JComboBox<>();
+        btnKeluar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Telegram Bot - Arif Saputra");
@@ -187,6 +191,7 @@ public class FormTelegramBot extends javax.swing.JFrame {
         jLabel8.setFont(new java.awt.Font("Poppins Medium", 0, 18)); // NOI18N
         jLabel8.setText("Pesan Keluar dan Masuk");
 
+        txtPesanMasukKeluar.setEditable(false);
         txtPesanMasukKeluar.setColumns(20);
         txtPesanMasukKeluar.setRows(5);
         txtPesanMasukKeluar.setMargin(new java.awt.Insets(6, 6, 6, 6));
@@ -224,6 +229,14 @@ public class FormTelegramBot extends javax.swing.JFrame {
             }
         });
 
+        btnKeluar.setFont(new java.awt.Font("Poppins Medium", 0, 15)); // NOI18N
+        btnKeluar.setText("Keluar");
+        btnKeluar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnKeluarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -231,8 +244,19 @@ public class FormTelegramBot extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel8)
+                            .addComponent(jLabel7))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnKunci, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnDatabase, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnKeluar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jScrollPane2)
                             .addGroup(layout.createSequentialGroup()
@@ -265,16 +289,7 @@ public class FormTelegramBot extends javax.swing.JFrame {
                                 .addComponent(cmbMember, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(btnBroadcast, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(20, 20, 20))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel8)
-                            .addComponent(jLabel7)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnKunci, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnDatabase, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGap(20, 20, 20))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -318,7 +333,8 @@ public class FormTelegramBot extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnKunci)
-                    .addComponent(btnDatabase))
+                    .addComponent(btnDatabase)
+                    .addComponent(btnKeluar))
                 .addGap(25, 25, 25))
         );
 
@@ -384,10 +400,12 @@ public class FormTelegramBot extends javax.swing.JFrame {
 
     private void btnKunciActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKunciActionPerformed
         // TODO add your handling code here:
+        new FormKataKunci().setVisible(true);
     }//GEN-LAST:event_btnKunciActionPerformed
 
     private void btnDatabaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDatabaseActionPerformed
         // TODO add your handling code here:
+        new FormPesan().setVisible(true);
     }//GEN-LAST:event_btnDatabaseActionPerformed
 
     private void btnHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusActionPerformed
@@ -434,6 +452,11 @@ public class FormTelegramBot extends javax.swing.JFrame {
     private void cmbMemberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbMemberActionPerformed
         // TODO add your handling code here:1441574211
     }//GEN-LAST:event_cmbMemberActionPerformed
+
+    private void btnKeluarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKeluarActionPerformed
+        // TODO add your handling code here:
+        System.exit(0);
+    }//GEN-LAST:event_btnKeluarActionPerformed
     
         // method set field form jika salah satu field tabel ditekan
     private void setField()
@@ -484,6 +507,32 @@ public class FormTelegramBot extends javax.swing.JFrame {
         }
     }
     
+    @Override
+    public void onMessageReceived(String chatId, String username, String message) {
+        // Save the message to the database
+        displayUserMessage(message);
+        saveMessageToDatabase(chatId, username, message);
+    }
+
+    private void saveMessageToDatabase(String chatId, String username, String text) {
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
+            String sql = "INSERT INTO pesan (chat_id, username, pesan) VALUES (?, ?, ?)";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, String.valueOf(chatId));
+            statement.setString(2, username);
+            statement.setString(3, text);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private void displayUserMessage(String message) {
+        SwingUtilities.invokeLater(() -> {
+            txtPesanMasukKeluar.append("User: " + message + "\n");
+        });
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -542,6 +591,7 @@ public class FormTelegramBot extends javax.swing.JFrame {
     private javax.swing.JButton btnDatabase;
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnHapus;
+    private javax.swing.JButton btnKeluar;
     private javax.swing.JButton btnKunci;
     private javax.swing.JButton btnRefresh;
     private javax.swing.JComboBox<String> cmbMember;
@@ -561,7 +611,7 @@ public class FormTelegramBot extends javax.swing.JFrame {
     private javax.swing.JTextField txtUsername;
     // End of variables declaration//GEN-END:variables
 
-    private void execute(SendMessage sendMessage) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+//    private void execute(SendMessage sendMessage) {
+//        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+//    }
 }

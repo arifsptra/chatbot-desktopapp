@@ -9,15 +9,11 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 /**
  *
@@ -37,20 +33,45 @@ public class Chatbot extends TelegramLongPollingBot {
     // Flag to track registration status
     private static final String REGISTERED_FLAG = "REGISTERED";
     
+    private MessageListener messageListener;
+
+    public void setMessageListener(MessageListener listener) {
+        this.messageListener = listener;
+    }
+
+
     @Override
     public void onUpdateReceived(Update update) {
+
         if(update.hasMessage()){
             Message message = update.getMessage();
             Long chatId = message.getChatId();
             String sChatId = Long.toString(chatId);
             String text = message.getText();
             String username = message.getFrom().getUserName();
-
+            
             System.out.println(sChatId);
             System.out.println(text);
             System.out.println(username);
 
             saveUserData(sChatId, username);
+            
+            // Simpan pesan ke dalam database
+            saveMessageToDatabase(sChatId, username, text);
+            
+            if (messageListener != null) {
+                messageListener.onMessageReceived(sChatId, username, text);
+            }
+            
+            if (message.getFrom().getUserName().equals(BOT_USERNAME)) {
+                String textBot = message.getText();
+
+                // Lakukan tindakan yang sesuai dengan pesan dari bot Anda
+                // Misalnya, simpan pesan ke dalam database atau proses pesan secara khusus
+
+                // Contoh: Cetak pesan yang dikirim oleh bot Anda
+                System.out.println("Pesan dari bot: " + textBot);
+            }
             
             boolean isRegistered = isUserRegistered(sChatId);
             if (!isRegistered) {
@@ -63,7 +84,11 @@ public class Chatbot extends TelegramLongPollingBot {
             } else {
                 if (text.equals("/cuaca")) {
                     sendResponse(chatId, "Cuaca Hari ini Dingin!");
-                } else {
+                } else if(text.equals("/berita")) {
+                    sendResponse(chatId, "Berita Hari ini gk ada!");
+                } else if(text.equals("/daftar")) {
+                    sendResponse(chatId, "Anda sudah terdaftar!");
+                }else {
                     sendResponse(chatId, "Pesan lain yang diterima setelah pendaftaran.");
                 }
             }
@@ -96,6 +121,20 @@ public class Chatbot extends TelegramLongPollingBot {
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+        }
+    }
+    
+    private void saveMessageToDatabase(String chatId, String username, String text) {
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
+            String sql = "INSERT INTO pesan (chat_id, username, pesan) VALUES (?, ?, ?)";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, String.valueOf(chatId));
+            statement.setString(2, username);
+            statement.setString(3, text);
+//            statement.setBoolean(4, isBot);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
     
