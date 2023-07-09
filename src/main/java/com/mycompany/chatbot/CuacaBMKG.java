@@ -20,6 +20,8 @@ public final class CuacaBMKG {
     String cityName; // Ganti dengan nama kota yang diinginkan
     String temperature;
     String humidity;
+    String cuaca;
+    int suhu;
     
     public CuacaBMKG(String kota) {
         cityName = kota;
@@ -74,7 +76,23 @@ public final class CuacaBMKG {
                                 temperature = timeRangeElement.getElementsByTagName("value").item(0).getTextContent();
                                 String unit = timeRangeElement.getElementsByTagName("value").item(0).getAttributes().getNamedItem("unit").getNodeValue();
 
+                                suhu = Integer.valueOf(temperature);
+                                
                                 temperature = "Suhu: " + temperature + " °" + unit;
+
+                                if (suhu < 15) {
+                                    cuaca = "Dingin";
+                                } else if (suhu >= 15 && suhu < 20) {
+                                    cuaca = "Sejuk";
+                                } else if (suhu >= 20 && suhu < 25) {
+                                    cuaca = "Normal";
+                                } else if (suhu >= 25 && suhu < 30) {
+                                    cuaca = "Hangat";
+                                } else if (suhu >= 30 && suhu < 35) {
+                                    cuaca = "Panas";
+                                } else {
+                                    cuaca = "Sangat Panas";
+                                }
                             }
                         }
                     } else if (description.equals("Humidity")) {
@@ -106,7 +124,7 @@ public final class CuacaBMKG {
     }
     
     public String getData() {
-        return temperature + ", " + humidity; 
+        return temperature + ", " + humidity + "\nCuaca " + cuaca; 
     }
 }
 
