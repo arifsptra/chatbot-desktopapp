@@ -9,14 +9,15 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
+import java.util.ArrayList;
+import java.util.List;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 /**
@@ -36,17 +37,9 @@ public class Chatbot extends TelegramLongPollingBot {
     
     // Flag to track registration status
     private static final String REGISTERED_FLAG = "REGISTERED";
-    
-    private MessageListener messageListener;
-
-    public void setMessageListener(MessageListener listener) {
-        this.messageListener = listener;
-    }
-    
 
     @Override
     public void onUpdateReceived(Update update) {
-
         if(update.hasMessage()){
             Message message = update.getMessage();
             Long chatId = message.getChatId();
@@ -77,9 +70,55 @@ public class Chatbot extends TelegramLongPollingBot {
                 }
             } else {
                 if (text.equals("/cuaca")) {
-                    String response = "Cuaca Hari ini Dingin!";
-                    sendResponse(chatId, response);
-                    saveMessageToDatabase("11520043", BOT_USERNAME, response);
+                    InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
+                    
+                    List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+
+                    List<InlineKeyboardButton> lists1 = new ArrayList<>();
+                    List<InlineKeyboardButton> lists2 = new ArrayList<>();
+                    List<InlineKeyboardButton> lists3 = new ArrayList<>();
+
+                    
+                    InlineKeyboardButton list1 = new InlineKeyboardButton();
+                    InlineKeyboardButton list2 = new InlineKeyboardButton();
+                    InlineKeyboardButton list3 = new InlineKeyboardButton();
+                    InlineKeyboardButton list4 = new InlineKeyboardButton();
+                    InlineKeyboardButton list5 = new InlineKeyboardButton();
+                    InlineKeyboardButton list6 = new InlineKeyboardButton();
+                    
+                    list1.setText("Pati");
+                    list1.setCallbackData("Pati");
+                    
+                    list2.setText("Rembang");
+                    list2.setCallbackData("Rembang");
+                    
+                    list3.setText("Kudus");
+                    list3.setCallbackData("Kudus");
+                    
+                    list4.setText("Demak");
+                    list4.setCallbackData("Demak");
+                    
+                    list5.setText("Semarang");
+                    list5.setCallbackData("Semarang");
+                    
+                    list6.setText("Cilacap");
+                    list6.setCallbackData("Cilacap");
+                    
+                    lists1.add(list1);
+                    lists1.add(list2);
+                    lists2.add(list3);
+                    lists2.add(list4);
+                    lists3.add(list5);
+                    lists3.add(list6);
+                   
+                    rowsInline.add(lists1);
+                    rowsInline.add(lists2);
+                    rowsInline.add(lists3);
+
+                    markup.setKeyboard(rowsInline);
+                    String response = "Pilih Kota: ";
+                    sendResponseChoose(chatId, response, markup);
+                    saveMessageToDatabase("11520043", BOT_USERNAME, response);                    
                 } else if(text.equals("/berita")) {
                     String response = "Berita Hari ini gk ada!";
                     sendResponse(chatId, response);
@@ -93,6 +132,35 @@ public class Chatbot extends TelegramLongPollingBot {
                     sendResponse(chatId, response);
                     saveMessageToDatabase("11520043", BOT_USERNAME, response);
                 }
+            }
+        } else if(update.hasCallbackQuery()) {
+            Message message = update.getCallbackQuery().getMessage();
+            CallbackQuery callbackQuery = update.getCallbackQuery();
+            String data = callbackQuery.getData();
+            
+            Long chatId = message.getChatId();
+            String sChatId = Long.toString(chatId);
+            String username = message.getFrom().getUserName();
+            
+            saveMessageToDatabase(sChatId, username, data);
+            
+            if(data.equals("Pati")){
+                sendResponseCuaca(chatId, data);
+            } else if(data.equals("Rembang")) {
+                sendResponseCuaca(chatId, data);
+
+            } else if(data.equals("Kudus")) {
+                sendResponseCuaca(chatId, data);
+
+            } else if(data.equals("Demak")) {
+                sendResponseCuaca(chatId, data);
+
+            } else if(data.equals("Semarang")) {
+                sendResponseCuaca(chatId, data);
+
+            } else if(data.equals("Cilacap")) {
+                sendResponseCuaca(chatId, data);
+
             }
         }
     }
@@ -193,6 +261,32 @@ public class Chatbot extends TelegramLongPollingBot {
             checkUserExistsStatement.close();
             statement.close();
         } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private void sendResponseChoose(Long chatId, String response, InlineKeyboardMarkup markup) {
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText(response);
+        message.setReplyMarkup(markup);
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private void sendResponseCuaca(Long chatId, String kota) {
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        CuacaBMKG bmkg = new CuacaBMKG(kota);
+        message.setText(bmkg.getData());
+        
+        saveMessageToDatabase("11520043", BOT_USERNAME, bmkg.getData());
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
             e.printStackTrace();
         }
     }

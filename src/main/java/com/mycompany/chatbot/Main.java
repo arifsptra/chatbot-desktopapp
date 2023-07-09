@@ -8,7 +8,9 @@ package com.mycompany.chatbot;
  *
  * @author arif
  */
-public interface MessageListener {
-    void onMessageReceived(String chatId, String username, String message);
+public class Main {
+    public static void main(String[] args) {
+        CuacaBMKG bmkg = new CuacaBMKG("Rembang");
+        bmkg.cuaca();
+    }
 }
-
