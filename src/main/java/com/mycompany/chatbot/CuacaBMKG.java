@@ -74,7 +74,7 @@ public final class CuacaBMKG {
                                 temperature = timeRangeElement.getElementsByTagName("value").item(0).getTextContent();
                                 String unit = timeRangeElement.getElementsByTagName("value").item(0).getAttributes().getNamedItem("unit").getNodeValue();
 
-                                temperature = "Temperature: " + temperature + " °" + unit;
+                                temperature = "Suhu: " + temperature + " °" + unit;
                             }
                         }
                     } else if (description.equals("Humidity")) {
@@ -92,7 +92,7 @@ public final class CuacaBMKG {
                                 humidity = timeRangeElement.getElementsByTagName("value").item(0).getTextContent();
                                 String unit = timeRangeElement.getElementsByTagName("value").item(0).getAttributes().getNamedItem("unit").getNodeValue();
 
-                                humidity = "Humidity: " + humidity + " " + unit;
+                                humidity = "Kelembapan: " + humidity + " " + unit;
                             }
                         }
                     }

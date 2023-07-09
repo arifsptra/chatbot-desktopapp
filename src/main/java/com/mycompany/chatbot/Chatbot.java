@@ -77,6 +77,18 @@ public class Chatbot extends TelegramLongPollingBot {
                     List<InlineKeyboardButton> lists1 = new ArrayList<>();
                     List<InlineKeyboardButton> lists2 = new ArrayList<>();
                     List<InlineKeyboardButton> lists3 = new ArrayList<>();
+                    List<InlineKeyboardButton> lists4 = new ArrayList<>();
+                    List<InlineKeyboardButton> lists5 = new ArrayList<>();
+                    List<InlineKeyboardButton> lists6 = new ArrayList<>();
+                    List<InlineKeyboardButton> lists7 = new ArrayList<>();
+                    List<InlineKeyboardButton> lists8 = new ArrayList<>();
+                    List<InlineKeyboardButton> lists9 = new ArrayList<>();
+                    List<InlineKeyboardButton> lists10 = new ArrayList<>();
+                    List<InlineKeyboardButton> lists11 = new ArrayList<>();
+                    List<InlineKeyboardButton> lists12 = new ArrayList<>();
+                    List<InlineKeyboardButton> lists13 = new ArrayList<>();
+                    List<InlineKeyboardButton> lists14 = new ArrayList<>();
+                    List<InlineKeyboardButton> lists15 = new ArrayList<>();
 
                     
                     InlineKeyboardButton list1 = new InlineKeyboardButton();
@@ -85,6 +97,31 @@ public class Chatbot extends TelegramLongPollingBot {
                     InlineKeyboardButton list4 = new InlineKeyboardButton();
                     InlineKeyboardButton list5 = new InlineKeyboardButton();
                     InlineKeyboardButton list6 = new InlineKeyboardButton();
+                    InlineKeyboardButton list7 = new InlineKeyboardButton();
+                    InlineKeyboardButton list8 = new InlineKeyboardButton();
+                    InlineKeyboardButton list9 = new InlineKeyboardButton();
+                    InlineKeyboardButton list10 = new InlineKeyboardButton();
+                    InlineKeyboardButton list11 = new InlineKeyboardButton();
+                    InlineKeyboardButton list12 = new InlineKeyboardButton();
+                    InlineKeyboardButton list13 = new InlineKeyboardButton();
+                    InlineKeyboardButton list14 = new InlineKeyboardButton();
+                    InlineKeyboardButton list15 = new InlineKeyboardButton();
+                    InlineKeyboardButton list16 = new InlineKeyboardButton();
+                    InlineKeyboardButton list17 = new InlineKeyboardButton();
+                    InlineKeyboardButton list18 = new InlineKeyboardButton();
+                    InlineKeyboardButton list19 = new InlineKeyboardButton();
+                    InlineKeyboardButton list20 = new InlineKeyboardButton();
+                    InlineKeyboardButton list21 = new InlineKeyboardButton();
+                    InlineKeyboardButton list22 = new InlineKeyboardButton();
+                    InlineKeyboardButton list23 = new InlineKeyboardButton();
+                    InlineKeyboardButton list24 = new InlineKeyboardButton();
+                    InlineKeyboardButton list25 = new InlineKeyboardButton();
+                    InlineKeyboardButton list26 = new InlineKeyboardButton();
+                    InlineKeyboardButton list27 = new InlineKeyboardButton();
+                    InlineKeyboardButton list28 = new InlineKeyboardButton();
+                    InlineKeyboardButton list29 = new InlineKeyboardButton();
+                    InlineKeyboardButton list30 = new InlineKeyboardButton();
+                    
                     
                     list1.setText("Pati");
                     list1.setCallbackData("Pati");
@@ -104,16 +141,126 @@ public class Chatbot extends TelegramLongPollingBot {
                     list6.setText("Cilacap");
                     list6.setCallbackData("Cilacap");
                     
+                    list7.setText("Banjarnegara");
+                    list7.setCallbackData("Banjarnegara");
+                    
+                    list8.setText("Batang");
+                    list8.setCallbackData("Batang");
+                    
+                    list9.setText("Blora");
+                    list9.setCallbackData("Blora");
+                    
+                    list10.setText("Boyolali");
+                    list10.setCallbackData("Boyolali");
+                    
+                    list11.setText("Brebes");
+                    list11.setCallbackData("Brebes");
+                    
+                    list12.setText("Jepara");
+                    list12.setCallbackData("Jepara");
+                    
+                    list13.setText("Klaten");
+                    list13.setCallbackData("Klaten");
+                    
+                    list14.setText("Kranganyar");
+                    list14.setCallbackData("Karanganyar");
+                    
+                    list15.setText("Kebumen");
+                    list15.setCallbackData("Kebumen");
+                    
+                    list16.setText("Kendal");
+                    list16.setCallbackData("Kendal");
+                    
+                    list17.setText("Slawi");
+                    list17.setCallbackData("Slawi");
+                    
+                    list18.setText("Sragen");
+                    list18.setCallbackData("Sragen");
+                    
+                    list19.setText("Sukoharjo");
+                    list19.setCallbackData("Sukoharjo");
+                    
+                    list20.setText("Pekalongan");
+                    list20.setCallbackData("Pekalongan");
+                    
+                    list21.setText("Purbalingga");
+                    list21.setCallbackData("Purbalingga");
+                    
+                    list22.setText("Purwodadi");
+                    list22.setCallbackData("Purwodadi");
+                    
+                    list23.setText("Purwokerto");
+                    list23.setCallbackData("Purwokerto");
+                    
+                    list24.setText("Pemalang");
+                    list24.setCallbackData("Pemalang");
+                    
+                    list25.setText("Salatiga");
+                    list25.setCallbackData("Salatiga");
+                    
+                    list26.setText("Surakarta");
+                    list26.setCallbackData("Surakarta");
+                    
+                    list27.setText("Tegal");
+                    list27.setCallbackData("Tegal");
+                    
+                    list28.setText("Temanggung");
+                    list28.setCallbackData("Temanggung");
+                    
+                    list29.setText("Wonogiri");
+                    list29.setCallbackData("Wonogiri");
+                    
+                    list30.setText("Wonosobo");
+                    list30.setCallbackData("Wonosobo");
+                    
                     lists1.add(list1);
                     lists1.add(list2);
                     lists2.add(list3);
                     lists2.add(list4);
                     lists3.add(list5);
                     lists3.add(list6);
+                    lists4.add(list7);
+                    lists4.add(list8);
+                    lists5.add(list9);
+                    lists5.add(list10);
+                    lists6.add(list11);
+                    lists6.add(list12);
+                    lists7.add(list13);
+                    lists7.add(list14);
+                    lists8.add(list15);
+                    lists8.add(list16);
+                    lists9.add(list17);
+                    lists9.add(list18);
+                    lists10.add(list19);
+                    lists10.add(list20);
+                    lists11.add(list21);
+                    lists11.add(list22);
+                    lists12.add(list23);
+                    lists12.add(list24);
+                    lists13.add(list25);
+                    lists13.add(list26);
+                    lists14.add(list27);
+                    lists14.add(list28);
+                    lists15.add(list29);
+                    lists15.add(list30);
+                    
                    
                     rowsInline.add(lists1);
                     rowsInline.add(lists2);
                     rowsInline.add(lists3);
+                    rowsInline.add(lists4);
+                    rowsInline.add(lists5);
+                    rowsInline.add(lists6);
+                    rowsInline.add(lists7);
+                    rowsInline.add(lists8);
+                    rowsInline.add(lists9);
+                    rowsInline.add(lists10);
+                    rowsInline.add(lists11);
+                    rowsInline.add(lists12);
+                    rowsInline.add(lists13);
+                    rowsInline.add(lists14);
+                    rowsInline.add(lists15);
+
 
                     markup.setKeyboard(rowsInline);
                     String response = "Pilih Kota: ";
@@ -144,24 +291,21 @@ public class Chatbot extends TelegramLongPollingBot {
             
             saveMessageToDatabase(sChatId, username, data);
             
-            if(data.equals("Pati")){
-                sendResponseCuaca(chatId, data);
-            } else if(data.equals("Rembang")) {
-                sendResponseCuaca(chatId, data);
+            sendResponseCuaca(chatId, data);
 
-            } else if(data.equals("Kudus")) {
-                sendResponseCuaca(chatId, data);
-
-            } else if(data.equals("Demak")) {
-                sendResponseCuaca(chatId, data);
-
-            } else if(data.equals("Semarang")) {
-                sendResponseCuaca(chatId, data);
-
-            } else if(data.equals("Cilacap")) {
-                sendResponseCuaca(chatId, data);
-
-            }
+//            if(data.equals("Pati")){
+//                sendResponseCuaca(chatId, data);
+//            } else if(data.equals("Rembang")) {
+//                sendResponseCuaca(chatId, data);
+//            } else if(data.equals("Kudus")) {
+//                sendResponseCuaca(chatId, data);
+//            } else if(data.equals("Demak")) {
+//                sendResponseCuaca(chatId, data);
+//            } else if(data.equals("Semarang")) {
+//                sendResponseCuaca(chatId, data);
+//            } else if(data.equals("Cilacap")) {
+//                sendResponseCuaca(chatId, data);
+//            } 
         }
     }
 

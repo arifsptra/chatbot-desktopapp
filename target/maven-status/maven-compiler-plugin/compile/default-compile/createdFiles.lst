@@ -2,12 +2,15 @@ com/mycompany/chatbot/FormTelegramBot$11.class
 com/mycompany/chatbot/FormKataKunci$2.class
 com/mycompany/chatbot/CuacaBMKG.class
 com/mycompany/chatbot/FormTelegramBot$6.class
+com/mycompany/chatbot/FormLogin.class
 com/mycompany/chatbot/FormKataKunci$4.class
 com/mycompany/chatbot/FormKataKunci.class
+com/mycompany/chatbot/FormLogin$2.class
 com/mycompany/chatbot/FormPesan$1.class
 com/mycompany/chatbot/FormKataKunci$9.class
 com/mycompany/chatbot/FormPesan.class
 com/mycompany/chatbot/FormTelegramBot$2.class
+com/mycompany/chatbot/FormLogin$3.class
 com/mycompany/chatbot/FormKataKunci$5.class
 com/mycompany/chatbot/FormTelegramBot$7.class
 com/mycompany/chatbot/FormPesan$2.class
@@ -21,6 +24,7 @@ com/mycompany/chatbot/FormTelegramBot$5.class
 com/mycompany/chatbot/Chatbot.class
 com/mycompany/chatbot/FormKataKunci$1.class
 com/mycompany/chatbot/FormKataKunci$8.class
+com/mycompany/chatbot/FormLogin$1.class
 com/mycompany/chatbot/FormTelegramBot$12.class
 com/mycompany/chatbot/FormTelegramBot$3.class
 com/mycompany/chatbot/Main.class
