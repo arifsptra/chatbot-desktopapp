@@ -63,6 +63,10 @@ public class Chatbot extends TelegramLongPollingBot {
                     String response = "Terima kasih telah mendaftar!";
                     sendResponse(chatId, response);
                     saveMessageToDatabase("11520043", BOT_USERNAME, response);
+                }  else if(text.equals("/help")) {
+                    String response = "Berikut adalah beberapa perintah yang tersedia:\n\n/daftar - Daftar ke bot\n/cuaca - Cek cuaca terkini";
+                    sendResponse(chatId, response);
+                    saveMessageToDatabase("11520043", BOT_USERNAME, response);
                 } else {
                     String response = "Silakan daftar terlebih dahulu dengan menggunakan perintah /daftar";
                     sendResponse(chatId, response);
@@ -274,7 +278,11 @@ public class Chatbot extends TelegramLongPollingBot {
                     String response = "Anda sudah terdaftar!";
                     sendResponse(chatId, response);
                     saveMessageToDatabase("11520043", BOT_USERNAME, response);
-                }else {
+                } else if(text.equals("/help")) {
+                    String response = "Berikut adalah beberapa perintah yang tersedia:\n\n/daftar - Daftar ke bot\n/cuaca - Cek cuaca terkini";
+                    sendResponse(chatId, response);
+                    saveMessageToDatabase("11520043", BOT_USERNAME, response);
+                } else {
                     String response = "Pesan lain yang diterima setelah pendaftaran.";
                     sendResponse(chatId, response);
                     saveMessageToDatabase("11520043", BOT_USERNAME, response);
