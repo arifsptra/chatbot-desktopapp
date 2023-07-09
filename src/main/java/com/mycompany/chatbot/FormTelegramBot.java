@@ -13,6 +13,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -28,7 +30,7 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
  *
  * @author arif
  */
-public class FormTelegramBot extends javax.swing.JFrame implements MessageListener  {
+public class FormTelegramBot extends javax.swing.JFrame  {
     
     // Database Credentials
     public String DB_URL = "jdbc:mysql://localhost:3306/db_chatbot";
@@ -49,11 +51,12 @@ public class FormTelegramBot extends javax.swing.JFrame implements MessageListen
         
         // Inisialisasi objek Chatbot
         chatbot = new Chatbot();
-        chatbot.setMessageListener(this);
         
         bacaData();
         
         bacaMember();
+        
+        bacaPesan();
         
         // mouse click tabel barang
         tabelMember.addMouseListener(new MouseAdapter() {
@@ -439,6 +442,7 @@ public class FormTelegramBot extends javax.swing.JFrame implements MessageListen
         bacaData();
         cmbMember.removeAllItems();
         bacaMember();
+        bacaPesan();
     }//GEN-LAST:event_btnRefreshActionPerformed
 
     private void btnBroadcastToActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBroadcastToActionPerformed
@@ -507,32 +511,30 @@ public class FormTelegramBot extends javax.swing.JFrame implements MessageListen
         }
     }
     
-    @Override
-    public void onMessageReceived(String chatId, String username, String message) {
-        // Save the message to the database
-        displayUserMessage(message);
-        saveMessageToDatabase(chatId, username, message);
-    }
+    private void bacaPesan() {
+        List<String> messages = new ArrayList<>(); // Store messages in a list
 
-    private void saveMessageToDatabase(String chatId, String username, String text) {
-        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
-            String sql = "INSERT INTO pesan (chat_id, username, pesan) VALUES (?, ?, ?)";
-            PreparedStatement statement = connection.prepareStatement(sql);
-            statement.setString(1, String.valueOf(chatId));
-            statement.setString(2, username);
-            statement.setString(3, text);
-            statement.executeUpdate();
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+             Statement statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+             ResultSet rs = statement.executeQuery("SELECT * FROM pesan")) {
+
+            rs.beforeFirst();
+            while (rs.next()) {
+                String message = "(" + rs.getString(1).trim() + ")" + rs.getString(2).trim() + ": " + rs.getString(3).trim();
+                messages.add(message); // Add each message to the list
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Error: " + e);
         }
-    }
-    
-    private void displayUserMessage(String message) {
+
+        // Display messages in the text area
         SwingUtilities.invokeLater(() -> {
-            txtPesanMasukKeluar.append("User: " + message + "\n");
+            for (String message : messages) {
+                txtPesanMasukKeluar.append(message + "\n");
+            }
         });
     }
-
+  
     /**
      * @param args the command line arguments
      */

@@ -9,6 +9,10 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -38,7 +42,7 @@ public class Chatbot extends TelegramLongPollingBot {
     public void setMessageListener(MessageListener listener) {
         this.messageListener = listener;
     }
-
+    
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -59,37 +63,35 @@ public class Chatbot extends TelegramLongPollingBot {
             // Simpan pesan ke dalam database
             saveMessageToDatabase(sChatId, username, text);
             
-            if (messageListener != null) {
-                messageListener.onMessageReceived(sChatId, username, text);
-            }
-            
-            if (message.getFrom().getUserName().equals(BOT_USERNAME)) {
-                String textBot = message.getText();
-
-                // Lakukan tindakan yang sesuai dengan pesan dari bot Anda
-                // Misalnya, simpan pesan ke dalam database atau proses pesan secara khusus
-
-                // Contoh: Cetak pesan yang dikirim oleh bot Anda
-                System.out.println("Pesan dari bot: " + textBot);
-            }
-            
             boolean isRegistered = isUserRegistered(sChatId);
             if (!isRegistered) {
                 if (text.equals("/daftar")) {
                     saveMemberData(sChatId, username);
-                    sendResponse(chatId, "Terima kasih telah mendaftar!");
+                    String response = "Terima kasih telah mendaftar!";
+                    sendResponse(chatId, response);
+                    saveMessageToDatabase("11520043", BOT_USERNAME, response);
                 } else {
-                    sendResponse(chatId, "Silakan daftar terlebih dahulu dengan menggunakan perintah /daftar");
+                    String response = "Silakan daftar terlebih dahulu dengan menggunakan perintah /daftar";
+                    sendResponse(chatId, response);
+                    saveMessageToDatabase("11520043", BOT_USERNAME, response);
                 }
             } else {
                 if (text.equals("/cuaca")) {
-                    sendResponse(chatId, "Cuaca Hari ini Dingin!");
+                    String response = "Cuaca Hari ini Dingin!";
+                    sendResponse(chatId, response);
+                    saveMessageToDatabase("11520043", BOT_USERNAME, response);
                 } else if(text.equals("/berita")) {
-                    sendResponse(chatId, "Berita Hari ini gk ada!");
+                    String response = "Berita Hari ini gk ada!";
+                    sendResponse(chatId, response);
+                    saveMessageToDatabase("11520043", BOT_USERNAME, response);
                 } else if(text.equals("/daftar")) {
-                    sendResponse(chatId, "Anda sudah terdaftar!");
+                    String response = "Anda sudah terdaftar!";
+                    sendResponse(chatId, response);
+                    saveMessageToDatabase("11520043", BOT_USERNAME, response);
                 }else {
-                    sendResponse(chatId, "Pesan lain yang diterima setelah pendaftaran.");
+                    String response = "Pesan lain yang diterima setelah pendaftaran.";
+                    sendResponse(chatId, response);
+                    saveMessageToDatabase("11520043", BOT_USERNAME, response);
                 }
             }
         }
@@ -131,7 +133,6 @@ public class Chatbot extends TelegramLongPollingBot {
             statement.setString(1, String.valueOf(chatId));
             statement.setString(2, username);
             statement.setString(3, text);
-//            statement.setBoolean(4, isBot);
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -219,6 +220,7 @@ public class Chatbot extends TelegramLongPollingBot {
                 long chatId = Long.parseLong(sChatId);
                 sendResponse(chatId, broadcast);
             }
+            saveMessageToDatabase("11520043", BOT_USERNAME, broadcast);
 
             resultSet.close();
             statement.close();
@@ -239,6 +241,7 @@ public class Chatbot extends TelegramLongPollingBot {
                 long chatId = Long.parseLong(sChatId);
                 sendResponse(chatId, broadcast);
             }
+            saveMessageToDatabase("11520043", BOT_USERNAME, broadcast);
 
             resultSet.close();
             statement.close();
