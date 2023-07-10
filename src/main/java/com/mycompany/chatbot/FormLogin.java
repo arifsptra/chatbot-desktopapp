@@ -50,16 +50,22 @@ public class FormLogin extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jLabel1.setFont(new java.awt.Font("Poppins Medium", 0, 15)); // NOI18N
         jLabel1.setText("Nama");
 
+        txtNama.setFont(new java.awt.Font("Poppins Medium", 0, 15)); // NOI18N
+
+        jLabel2.setFont(new java.awt.Font("Poppins Medium", 0, 15)); // NOI18N
         jLabel2.setText("Password");
 
+        txtPassword.setFont(new java.awt.Font("Poppins Medium", 0, 15)); // NOI18N
         txtPassword.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtPasswordActionPerformed(evt);
             }
         });
 
+        btnLogin.setFont(new java.awt.Font("Poppins Medium", 0, 15)); // NOI18N
         btnLogin.setText("Login");
         btnLogin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -72,7 +78,7 @@ public class FormLogin extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(50, 50, 50)
+                .addGap(100, 100, 100)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(btnLogin)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -80,7 +86,7 @@ public class FormLogin extends javax.swing.JFrame {
                         .addComponent(jLabel1)
                         .addComponent(txtNama, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
                         .addComponent(txtPassword)))
-                .addContainerGap(50, Short.MAX_VALUE))
+                .addContainerGap(100, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
