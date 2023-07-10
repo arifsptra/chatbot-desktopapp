@@ -14,7 +14,9 @@ Chatbot Check Weather is a chatbot application developed using the Java programm
 - Clone this repository to your computer.
 - Open the project in a Java IDE like **NetBeans** or **Eclipse** or Others.
 - Make sure you have a stable internet connection to access the **BMKG API**.
+
 or
+
 - You can open directory **/target**
 - And run file **chatbot-1.0-SNAPSHOT-jar-with-dependencies.jar**
 - If you use linux use this command **java -jar chatbot-1.0-SNAPSHOT-jar-with-dependencies.jar**
