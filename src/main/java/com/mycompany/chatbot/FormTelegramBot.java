@@ -66,6 +66,7 @@ public class FormTelegramBot extends javax.swing.JFrame  {
             }
         });
     }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -510,7 +511,7 @@ public class FormTelegramBot extends javax.swing.JFrame  {
         }
     }
     
-    private void bacaPesan() {
+    public void bacaPesan() {
         List<String> messages = new ArrayList<>(); // Store messages in a list
 
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
@@ -519,7 +520,7 @@ public class FormTelegramBot extends javax.swing.JFrame  {
 
             rs.beforeFirst();
             while (rs.next()) {
-                String message = "(" + rs.getString(1).trim() + ")" + rs.getString(2).trim() + ": " + rs.getString(3).trim();
+                String message = "(" + rs.getString(2).trim() + ")" + rs.getString(3).trim() + ": " + rs.getString(4).trim();
                 messages.add(message); // Add each message to the list
             }
         } catch (SQLException e) {
@@ -534,6 +535,10 @@ public class FormTelegramBot extends javax.swing.JFrame  {
         });
     }
   
+    public static void Call() {
+        new FormLogin().setVisible(true);
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -575,11 +580,8 @@ public class FormTelegramBot extends javax.swing.JFrame  {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                try {
-                    new FormTelegramBot().setVisible(true);
-                } catch (SQLException ex) {
-                    Logger.getLogger(FormTelegramBot.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                //                    new FormTelegramBot().setVisible(true);
+                Call();
             }
         });
     }
@@ -611,8 +613,4 @@ public class FormTelegramBot extends javax.swing.JFrame  {
     private javax.swing.JTextArea txtPesanMasukKeluar;
     private javax.swing.JTextField txtUsername;
     // End of variables declaration//GEN-END:variables
-
-//    private void execute(SendMessage sendMessage) {
-//        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-//    }
 }

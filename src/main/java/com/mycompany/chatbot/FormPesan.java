@@ -6,11 +6,14 @@ package com.mycompany.chatbot;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import javax.swing.JOptionPane;
+import javax.swing.JSpinner;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -26,7 +29,7 @@ public class FormPesan extends javax.swing.JFrame {
     ResultSet rsBrg;
     Statement stm;
     private Object[][] dataTable = null;
-    private String[] header = {"ChatID", "Username", "Pesan"};
+    private String[] header = {"ChatID", "Username", "Pesan", "Date"};
 
     /**
      * Creates new form FormPesan
@@ -34,6 +37,9 @@ public class FormPesan extends javax.swing.JFrame {
     public FormPesan() {
         initComponents();
         bacaData();
+        
+        tglFrom.setEditor(new JSpinner.DateEditor(tglFrom, "yyyy-MM-dd"));
+        tglTo.setEditor(new JSpinner.DateEditor(tglTo, "yyyy-MM-dd"));
     }
 
     /**
@@ -50,19 +56,24 @@ public class FormPesan extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         btnKeluar = new javax.swing.JButton();
         btnRefresh = new javax.swing.JButton();
+        tglFrom = new javax.swing.JSpinner();
+        jLabel3 = new javax.swing.JLabel();
+        tglTo = new javax.swing.JSpinner();
+        jLabel4 = new javax.swing.JLabel();
+        btnFilter = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         tabelPesan.setFont(new java.awt.Font("Poppins Medium", 0, 15)); // NOI18N
         tabelPesan.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "Chat ID", "Username", "Pesan"
+                "Chat ID", "Username", "Pesan", "Date"
             }
         ));
         jScrollPane1.setViewportView(tabelPesan);
@@ -86,19 +97,48 @@ public class FormPesan extends javax.swing.JFrame {
             }
         });
 
+        tglFrom.setModel(new javax.swing.SpinnerDateModel());
+
+        jLabel3.setText("From");
+
+        tglTo.setModel(new javax.swing.SpinnerDateModel());
+
+        jLabel4.setText("To");
+
+        btnFilter.setText("Filter");
+        btnFilter.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFilterActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 396, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addContainerGap()
                         .addComponent(btnRefresh)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnKeluar)))
+                        .addComponent(btnKeluar))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(20, 20, 20)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(jLabel3)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(tglFrom, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(jLabel4)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(tglTo, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(btnFilter))
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 556, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap(20, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -106,8 +146,15 @@ public class FormPesan extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(19, 19, 19)
                 .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tglFrom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
+                    .addComponent(tglTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4)
+                    .addComponent(btnFilter))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnKeluar)
@@ -128,6 +175,22 @@ public class FormPesan extends javax.swing.JFrame {
         bacaData();
     }//GEN-LAST:event_btnRefreshActionPerformed
 
+    private void btnFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFilterActionPerformed
+        // TODO add your handling code here:
+        java.util.Date selectedFromDate = (java.util.Date) tglFrom.getValue();
+        java.util.Date selectedToDate = (java.util.Date) tglTo.getValue();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        String formattedFromDate = dateFormat.format(selectedFromDate);
+        String formattedToDate = dateFormat.format(selectedToDate);
+
+        bacaDataFilter(formattedFromDate, formattedToDate);
+
+        System.out.println(formattedFromDate);
+        System.out.println(formattedToDate);
+    }//GEN-LAST:event_btnFilterActionPerformed
+
     // method baca data dari Mysql dimasukkan ke table pada form
     private void bacaData() {
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
@@ -146,12 +209,44 @@ public class FormPesan extends javax.swing.JFrame {
                 dataTable[x][0] = rsBrg.getString("chat_id");
                 dataTable[x][1] = rsBrg.getString("username");
                 dataTable[x][2] = rsBrg.getString("pesan");
+                dataTable[x][3] = rsBrg.getString("date");
                 x++;
             }
             tabelPesan.setModel(new DefaultTableModel(dataTable,header));
         }
         catch(SQLException e)
         {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+    
+    private void bacaDataFilter(String startDate, String endDate) {
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
+            String sql = "SELECT * FROM pesan WHERE date BETWEEN ? AND ?";
+            PreparedStatement statement = connection.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            statement.setString(1, startDate);
+            statement.setString(2, endDate);
+
+            rsBrg = statement.executeQuery();
+
+            ResultSetMetaData meta = rsBrg.getMetaData();
+            int col = meta.getColumnCount();
+            int baris = 0;
+            while (rsBrg.next()) {
+                baris = rsBrg.getRow();
+            }
+            dataTable = new Object[baris][col];
+            int x = 0;
+            rsBrg.beforeFirst();
+            while (rsBrg.next()) {
+                dataTable[x][0] = rsBrg.getString("chat_id");
+                dataTable[x][1] = rsBrg.getString("username");
+                dataTable[x][2] = rsBrg.getString("pesan");
+                dataTable[x][3] = rsBrg.getString("date");
+                x++;
+            }
+            tabelPesan.setModel(new DefaultTableModel(dataTable, header));
+        } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, e);
         }
     }
@@ -192,10 +287,15 @@ public class FormPesan extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnFilter;
     private javax.swing.JButton btnKeluar;
     private javax.swing.JButton btnRefresh;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tabelPesan;
+    private javax.swing.JSpinner tglFrom;
+    private javax.swing.JSpinner tglTo;
     // End of variables declaration//GEN-END:variables
 }
