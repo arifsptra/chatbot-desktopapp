@@ -15,6 +15,9 @@ Chatbot Check Weather is a chatbot application developed using the Java programm
 - Open the project in a Java IDE like **NetBeans** or **Eclipse** or Others.
 - Make sure you have a stable internet connection to access the **BMKG API**.
 
+## Database Design
+![drawSQL-chatbot-export-2023-07-10](https://github.com/arifsptra/chatbot-desktopapp/assets/91882024/9aab483c-cb6e-4e70-a283-b140dceb6da4)
+
 ## Contribution
 If you want to contribute to the development of this program, you can fork this repository, make the desired changes, and submit a pull request for review.
 
